@@ -28,7 +28,7 @@ fun Application.main() {
 ```
 
 Fine, but how how do you get that to compile? Well, first you will need these imports (I am not a fan of 
-wildcarding imports):
+wildcarding):
 
 ```
 import org.jetbrains.ktor.application.Application
@@ -41,8 +41,8 @@ import org.jetbrains.ktor.routing.Routing
 import org.jetbrains.ktor.routing.get
 ```
 
-To compile with a Maven POM (assuming you already have a POM that works for compiling Kotlin) you will 
-need to add this repository definition:
+To compile with a Maven POM (assuming you already have a POM that works for Kotlin that you can extend) 
+you will need to add this repository definition:
 
 ```
 <repositories>
@@ -94,7 +94,7 @@ Great, it compiles, but how do you run it? Downloading the [Ktor](https://github
 and studying the ['Hello World' sample code](https://github.com/Kotlin/ktor/tree/master/ktor-samples) 
 provides the necessary clues. 
 
-As of this writing, the [README.md](https://github.com/Kotlin/ktor/blob/master/ktor-samples/README.md) 
+As of this writing, the [Ktor sample code README.md](https://github.com/Kotlin/ktor/blob/master/ktor-samples/README.md) 
 instructions for running in under **IntelliJ IDEA** are out of date. To run with Netty, the class
 you want to point to is `org.jetbrains.ktor.netty.DevelopmentHost`. It is this that provides the 
 `main(args: Array<String>)` that you need.
@@ -178,7 +178,50 @@ we just need to add the `exec-maven-plugin` plugin and point it to the :
 </plugin>
 ```
 
+## Shading For Command Line Execution
 
+The final step, configuring the POM to build a fat, all-in-one, jar file that will allow execution from
+the command line like this:
 
+```
+java -jar ktor-portfolio-0.5-SNAPSHOT.jar
+```
 
+You just have to add the `maven-shade-plugin` to the POM and configure it with the 
+`org.jetbrains.ktor.netty.DevelopmentHost` main class:
+
+```
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-shade-plugin</artifactId>
+    <version>3.0.0</version>
+    <executions>
+        <!-- Run shade goal on package phase -->
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>shade</goal>
+            </goals>
+            <configuration>
+                <transformers>
+                    <!-- add Main-Class to manifest file -->
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                        <mainClass>org.jetbrains.ktor.netty.DevelopmentHost</mainClass>
+                    </transformer>
+                </transformers>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+```
+
+## Tests And Warnings
+
+The project has zero unit tests as yet, that's barely excusable except that I wnated to be sure that
+I could actually get a Ktor server running at all before I invested any effort in writing code.
+
+The same justification applies to the build warnings thrown off by Maven. Ordinarilly I consider a
+warning to be the equivalent of an error; I am turning a blind eye on those until I have proved to
+myself that I can realistically use Ktor to match at least the static placeholder content that I 
+currently have at [mikebroadway.com](http://mikebroadway.com).
 

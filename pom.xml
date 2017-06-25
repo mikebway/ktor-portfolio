@@ -16,7 +16,7 @@
         <!-- Version numbers -->
         <jvm.target>1.8</jvm.target>
         <junit.version>4.12</junit.version>
-        <kotlin.version>1.1.2-4</kotlin.version>
+        <kotlin.version>1.1.2-5</kotlin.version>
         <ktor.version>0.3.3</ktor.version>
     </properties>
 
@@ -106,10 +106,33 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
 
                 <configuration>
                     <mainClass>org.jetbrains.ktor.netty.DevelopmentHost</mainClass>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <!-- Run shade goal on package phase -->
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <!-- add Main-Class to manifest file -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.jetbrains.ktor.netty.DevelopmentHost</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
