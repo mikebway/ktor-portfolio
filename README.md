@@ -41,8 +41,7 @@ import org.jetbrains.ktor.routing.Routing
 import org.jetbrains.ktor.routing.get
 ```
 
-To compile with a Maven POM (assuming you already have a POM that works for Kotlin that you can extend) 
-you will need to add this repository definition:
+To compile with a Maven POM you will need to add this repository definition:
 
 ```
 <repositories>
