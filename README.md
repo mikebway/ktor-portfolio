@@ -62,7 +62,8 @@ and these properties / dependencies:
 ```
 <properties>
     ...
-    <kotlin.version>1.1.2-4</kotlin.version>
+    <jvm.target>1.8</jvm.target>
+    <kotlin.version>1.1.2-5</kotlin.version>
     <ktor.version>0.3.3</ktor.version>
     ...
 </properties>
@@ -86,6 +87,35 @@ and these properties / dependencies:
     </dependency>
     ...
 </dependencies>
+```
+
+and this Kotlin compiler plugin:
+
+```
+<plugin>
+    <groupId>org.jetbrains.kotlin</groupId>
+    <artifactId>kotlin-maven-plugin</artifactId>
+    <version>${kotlin.version}</version>
+    <configuration>
+        <jvmTarget>${jvm.target}</jvmTarget>
+    </configuration>
+    <executions>
+        <execution>
+            <id>compile</id>
+            <phase>compile</phase>
+            <goals>
+                <goal>compile</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>test-compile</id>
+            <phase>test-compile</phase>
+            <goals>
+                <goal>test-compile</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
 ```
 
 ## Where Is The `main(...)` Function?
