@@ -217,11 +217,11 @@ You just have to add the `maven-shade-plugin` to the POM and configure it with t
 
 ## Tests And Warnings
 
-The project has zero unit tests as yet, that's barely excusable except that I wnated to be sure that
+The project has zero unit tests as yet, that's barely excusable except that I wanted to be sure that
 I could actually get a Ktor server running at all before I invested any effort in writing code.
 
 The same justification applies to the build warnings thrown off by Maven. Ordinarilly I consider a
-warning to be the equivalent of an error; I am turning a blind eye on those until I have proved to
-myself that I can realistically use Ktor to match at least the static placeholder content that I 
-currently have at [mikebroadway.com](http://mikebroadway.com).
+warning to be the equivalent of an error; for now, I am turning a blind eye on those until I have proved 
+to myself that I can realistically use [Ktor](https://github.com/kotlin/ktor) to match at least the 
+static placeholder content that I currently have at [mikebroadway.com](http://mikebroadway.com).
 
