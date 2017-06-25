@@ -132,7 +132,7 @@ But you are not done yet ...
 
 ## Configuring the Skeleton App
 
-Finding the application entry point is just the start though, it expects to have a configuration.
+Finding the application entry point was just the start; it expects to have a configuration.
 The `main(...)` function instantiates an `ApplicationHostEnvironment`
 object from either command line parameters or a default `application.conf` file. The `main(...)` 
 function finishes by using the configuration to create a `NettyApplicationHost` and starting that. For
