@@ -133,9 +133,9 @@ But you are not done yet ...
 ## Configuring the Skeleton App
 
 Finding the application entry point was just the start; it expects to have a configuration.
-The `main(...)` function instantiates an `ApplicationHostEnvironment`
-object from either command line parameters or a default `application.conf` file. The `main(...)` 
-function finishes by using the configuration to create a `NettyApplicationHost` and starting that. For
+The `main(...)` function configures an `ApplicationHostEnvironment`
+object using either command line parameters or a default `application.conf` file. The `main(...)` 
+function finishes by using the environment to a `NettyApplicationHost` and starting that. For
 all this to work, you have to provide the `application.conf` file in your `resources` directory; here's
 one ripped off from the [Ktor 'Hello World' example](https://github.com/Kotlin/ktor/blob/master/ktor-samples/ktor-samples-hello/resources/application.conf):
 
@@ -159,16 +159,27 @@ a `logback.xml` file to the `resources` directory.
 The [Logback](https://logback.qos.ch/) POM dependencies:
 
 ```
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <version>1.7.12</version>
-        </dependency>        
+ <properties>
+     ...
+     <logback.version>1.2.1</logback.version>
+     <slf4j.version>1.7.12</slf4j.version>
+     ...
+ </properties>
+ 
+<dependencies>
+    ...
+    <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+    </dependency>        
+    ...
+<dependencies>
 ```
 
 The `resources/logback.xml` file:
