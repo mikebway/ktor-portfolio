@@ -159,12 +159,12 @@ a `logback.xml` file to the `resources` directory.
 The [Logback](https://logback.qos.ch/) POM dependencies:
 
 ```
- <properties>
-     ...
-     <logback.version>1.2.1</logback.version>
-     <slf4j.version>1.7.12</slf4j.version>
-     ...
- </properties>
+<properties>
+    ...
+    <logback.version>1.2.1</logback.version>
+    <slf4j.version>1.7.12</slf4j.version>
+    ...
+</properties>
  
 <dependencies>
     ...
@@ -211,7 +211,6 @@ we just need to add the `exec-maven-plugin` plugin and point it to the :
 <plugin>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>exec-maven-plugin</artifactId>
-
     <configuration>
         <mainClass>org.jetbrains.ktor.netty.DevelopmentHost</mainClass>
     </configuration>
