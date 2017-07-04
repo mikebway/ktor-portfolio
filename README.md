@@ -10,6 +10,23 @@ how to construct and run a basic [Ktor](https://github.com/kotlin/ktor) applicat
 this point; half of the Google search results that you are likely to get are for the *Star Wars: Knights 
 of the Old Republic* game (KotOR is close to Kotr)!
 
+### Update - July 4, 2017
+
+Having completed the next step of returning HTML from a handler declared outside of the `Application.main()` 
+function (see [Separate HTML Handlers](#html-handlers) below), I will be shelving this project for the 
+time being. 
+
+[Ktor](https://github.com/kotlin/ktor) is a promising Web application and microservice framework that,
+built on the [Kotlin coroutine system](https://kotlinlang.org/docs/reference/coroutines.html), should be 
+able to maximize the ability of lightweight servers to handle high traffic volumes.
+Unfortunately, at this time, the Ktor documentation is not yet mature enough for an outsider to utilize 
+the framework to build an application. The functionality appears to be present in the source code (e.g. to 
+return static files or match path expressions) but playing Sherlock Holmes to make sense of the 
+uncommented forest of Ktor's expert Kotlin syntax is not an efficient way to learn how to apply it.
+
+I'll be monitoring [Ktor's](https://github.com/kotlin/ktor) progress and look forward to reviving this 
+project once the documentation has filled out and the code base is more stable.
+
 ## A Skeleton Application
 
 With a bit of poking around you may eventually find that a 'Hello World' application, returning plain text 
@@ -253,6 +270,83 @@ You just have to add the `maven-shade-plugin` to the POM and configure it with t
     </executions>
 </plugin>
 ```
+
+## <a id="html-handlers"></a>Separate HTML Handlers
+
+After getting the minimal skeleton to run, a natural next step is to generate HTML instead of text and 
+separate the hander implemenation into its own file, away from the `Application.main(...)` function.
+ 
+To render HTML you need to add the Ktor HTML dependency to the POM file:
+
+```
+<dependency>
+    <groupId>org.jetbrains.ktor</groupId>
+    <artifactId>ktor-html-builder</artifactId>
+    <version>${ktor.version}</version>
+</dependency>
+```
+
+To invoke an external lambda expression from the `get('/')` route, the function name (`home`) has to be declared 
+as an explicit parameter inside the parenthesis:
+ 
+```
+...
+import com.mikebway.ktor.handlers.home
+...
+
+fun Application.main() {
+    install(DefaultHeaders)
+    install(CallLogging)
+    install(Routing) {
+        get("/", home)
+    }
+}
+```
+
+The only tricky part is to understand the declaration of the `home` lambda as a receiver of type
+`PipelineInterceptor<ApplicationCall>`. For this project, `home` is defined in the file
+[Home.kt](src/main/kotlin/com/mikebway/ktor/handlers/Home.kt) as follows:
+
+```
+val home: PipelineInterceptor<ApplicationCall> = {
+    call.respondHtml {
+        head {
+            title { +"HTML Application" }
+        }
+        body {
+            h1 { +"Sample application with HTML builders" }
+            p { +"Ktor shows promise as a lightweight but sophisticated Web framework." }
+        }
+    }
+}
+```
+
+Making sense of how this works this takes some detective effort. `PipelineInterceptor<ApplicationCall>` is
+a type alias declared as follows:
+
+```
+typealias PipelineInterceptor<TSubject> = suspend PipelineContext<TSubject>.(TSubject) -> Unit
+```
+
+which means that `val home: PipelineInterceptor<ApplicationCall>` declares `home` as a lambda receiver
+of the `ApplicationCall` reification of the generic `PipelineContext<TSubject>` class, in effect
+a member property of the `PipelineContext<ApplicationCall>`. The `.(TSubject)` parameter declaration 
+indicates that the lambda is passed an instance of `ApplicationCall` as a parameter, accessible as `it`.
+
+The `suspend` keyword signals that the [Kotlin coroutine system](https://kotlinlang.org/docs/reference/coroutines.html)
+may suspend execution of the function to switch the current thread to execute other paused activities.
+
+The `call` in `call.respondHtml` invokes an extension member property of `PipelineContext<ApplicationCall>`
+that exposes the `subject` property of `PipelineContext<TSubject>` as an explicit `ApplicationCall` object. 
+Using `call` follows the pattern established by the Ktor documentation and [sample code](https://github.com/Kotlin/ktor/blob/master/ktor-samples/ktor-samples-html/src/org/jetbrains/ktor/samples/html/HtmlApplication.kt).
+Exactly the same effect could be achieved if `call` were replaced by either `subject`, referring to the
+actual backing property define in `PipelineContext<TSubject>`, or `it`, referring to the anonymous 
+`ApplicationCall` parameter passed to the lambda. A `println` call confirmed that all three have the
+same value!
+ 
+Why so many ways to do the same thing? `call` makes sense as a self describing artifact of the Ktor DSL
+but passing the same `ApplicationCall` as an `it` parameter seems entirely redundant. By the time anyone 
+reads this the Ktor code may well have evolved to reduce this confusion of choices.
 
 ## Tests And Warnings
 
